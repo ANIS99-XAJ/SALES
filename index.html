@@ -1,0 +1,93 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Company Sales Calculator</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #f9f9f9; }
+    table { width: 100%; border-collapse: collapse; font-size: 0.9rem; background: #fff; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background: #eee; }
+    input[type=number] { width: 60px; }
+    .highlight { background: #e0ffe0; }
+  </style>
+</head>
+<body>
+  <h2>Company Sales Calculator</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>Company</th><th>Kgs</th><th>Selling</th><th>Buying</th>
+        <th>Net Sales</th><th>VAT</th><th>Total Incl</th><th>WHT</th><th>1.5%</th><th>Sales-WHT</th>
+        <th>Price diff</th><th>Broker</th><th>Inv 2.5%</th><th>Net Worth</th><th>Habiba</th><th>Anis</th><th>Geo</th>
+      </tr>
+    </thead>
+    <tbody id="table-body"></tbody>
+  </table>
+
+  <script>
+    const companies = [
+      { name: "Bluenile-Heavy", kgs: 1, selling: 51, buying: 55 },
+      { name: "Bluenile-Light", kgs: 1, selling: 47, buying: 51 },
+      { name: "Deviki-Athi", kgs: 1, selling: 52, buying: 55 },
+      { name: "Deviki-Msa", kgs: 1, selling: 51, buying: 54 },
+      { name: "Rongtai", kgs: 0, selling: 51, buying: 0 },
+      { name: "Jumbo-Msa", kgs: 0, selling: 51, buying: 0 },
+      { name: "Kaluworks", kgs: 0, selling: 51, buying: 0 },
+      { name: "Canon", kgs: 0, selling: 51, buying: 0 },
+      { name: "Fanaka", kgs: 0, selling: 51, buying: 0 },
+    ];
+
+    const tbody = document.getElementById("table-body");
+
+    function createRow(company, index) {
+      const row = document.createElement("tr");
+
+      // Inputs
+      row.innerHTML += `<td>${company.name}</td>`;
+      row.innerHTML += \`<td><input type="number" value="\${company.kgs}" onchange="recalc(\${index})" id="kgs-\${index}"></td>\`;
+      row.innerHTML += \`<td><input type="number" value="\${company.selling}" onchange="recalc(\${index})" id="selling-\${index}"></td>\`;
+      row.innerHTML += \`<td><input type="number" value="\${company.buying}" onchange="recalc(\${index})" id="buying-\${index}"></td>\`;
+
+      for (let i = 0; i < 13; i++) {
+        row.innerHTML += \`<td id="c\${index}-\${i}" class="highlight"></td>\`;
+      }
+
+      return row;
+    }
+
+    function recalc(i) {
+      const kgs = parseFloat(document.getElementById(\`kgs-\${i}\`).value) || 0;
+      const selling = parseFloat(document.getElementById(\`selling-\${i}\`).value) || 0;
+      const buying = parseFloat(document.getElementById(\`buying-\${i}\`).value) || 0;
+
+      const netSales = kgs * selling;
+      const vat = netSales * 0.16;
+      const totalIncl = netSales + vat;
+      const wht = netSales * 0.02;
+      const one5 = netSales * 0.015;
+      const salesWHT = totalIncl - wht - one5;
+      const priceDiff = Math.max(buying - selling, 0);
+      const broker = kgs > 0 ? 0.5 : 0;
+      const inv = netSales * 0.025;
+      const netWorth = netSales - inv;
+      const habiba = netWorth * 0.0043;
+      const anis = netWorth * 0.0035;
+      const geo = netWorth * 0.0008;
+
+      const values = [netSales, vat, totalIncl, wht, one5, salesWHT, priceDiff, broker, inv, netWorth, habiba, anis, geo];
+      values.forEach((val, j) => {
+        document.getElementById(\`c\${i}-\${j}\`).textContent = val.toFixed(2);
+      });
+    }
+
+    companies.forEach((company, index) => {
+      const row = createRow(company, index);
+      tbody.appendChild(row);
+      recalc(index);
+    });
+  </script>
+</body>
+</html>
